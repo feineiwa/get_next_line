@@ -6,7 +6,7 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 08:56:20 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/09 11:25:33 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/10 10:17:19 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,6 @@ typedef struct s_list
 }	t_list;
 
 char	*get_next_line(int fd);
+char	*gnl(int fd);
 
 #endif

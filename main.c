@@ -6,7 +6,7 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 09:50:14 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/05 15:55:57 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/10 16:12:09 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ int	main()
 
 	fd = open("tests/text.txt", O_RDONLY);
 
-	get_next_line(fd);
+	line = gnl(fd);
+	free(line);
 	// while (1)
 	// {
 	// 	line = get_next_line(fd);

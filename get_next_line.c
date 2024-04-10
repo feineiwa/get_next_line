@@ -6,7 +6,7 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 07:40:10 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/09 14:11:32 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/10 09:35:36 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,14 @@ char	*get_next_line(int fd)
 		return (NULL);
 	if (!(stash = malloc(sizeof(t_list))))
 		return (NULL);
-	if (!(buff = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
-		return (NULL);
 	stash->content = NULL;
 	stash->next = NULL;
 	init = stash;
 	//1.read from fd and to linked list
 	while (!found_newline(stash->content) && rd != 0)
 	{
+		if (!(buff = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
+			return (NULL);
 		rd = (int)read(fd, buff, BUFFER_SIZE);
 		buff[rd] = '\0';
 		if ((stash == NULL && rd == 0) || rd == -1)
@@ -52,7 +52,7 @@ char	*get_next_line(int fd)
 			stash->next->content = NULL;
 			stash->next->next = NULL;
 		}
-		// printf("%s\n", stash->content);
+		printf("%s\n", stash->content);
 		stash = stash->next;
 		free(buff);
 	}
