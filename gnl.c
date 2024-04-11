@@ -6,7 +6,7 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 09:22:57 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/10 17:35:06 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/11 13:56:55 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ t_list	*ft_lstlast(t_list *lst);
 char	*extracted_line(t_list *stash);
 int		len_line(t_list *stash);
 void	ft_clean(t_list **stash);
-// void	ft_free(t_list **stash, char *buff, t_list *clean);
+void	ft_free(t_list **stash, char *buff, t_list *clean);
 
 
 char	*gnl(int fd)
@@ -42,14 +42,6 @@ char	*gnl(int fd)
 	//clean up the stash
 	ft_clean(&stash);
 	// printf("%s", line);
-	int	i;
-	while (stash)
-	{
-		i = 0;
-		printf("%s", stash->content);
-		stash = stash->next;
-	}
-
 	return (line);
 }
 
@@ -107,10 +99,6 @@ void	push_in_stash(t_list **stash, char *buff)
 		*stash = new_node;
 	else
 		last_node->next = new_node;
-// void	ft_free(t_list **stash, char *buff, t_list *clean)
-// {
-	
-// }
 	new_node->content = buff;
 	new_node->next = NULL;
 }
@@ -194,7 +182,6 @@ void	ft_clean(t_list **stash)
 	}
 	last = ft_lstlast(*stash);
 	i = 0;
-	clean->next = NULL;
 	while (last->content[i] && last->content[i] != '\n')
 		i++;
 	j = 0;
@@ -203,7 +190,7 @@ void	ft_clean(t_list **stash)
 	buff[j] = '\0';
 	clean->content = buff;
 	clean->next = NULL;
-	// ft_free(*stash, buff, clean);
+	ft_free(stash, buff, clean);
 }
 
 int		ft_strlen(char *str)
@@ -216,7 +203,25 @@ int		ft_strlen(char *str)
 	return (i);
 }
 
-// void	ft_free(t_list **stash, char *buff, t_list *clean)
-// {
+void	ft_free(t_list **stash, char *buff, t_list *clean)
+{
+	t_list	*iter;
 	
-// }
+	if (*stash == NULL)
+		return ;
+	while (*stash)
+	{
+		iter = (*stash)->next;
+		free((*stash)->content);
+		free(*stash);
+		*stash = iter;
+	}
+	*stash = NULL;
+	if (clean->content[0])
+		*stash = clean;
+	else
+	{
+		free(buff);
+		free(clean);
+	}
+}
