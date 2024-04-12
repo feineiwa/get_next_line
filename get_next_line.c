@@ -6,187 +6,175 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 07:40:10 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/10 09:35:36 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/12 15:30:47 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-t_list	*read_and_stash(int	fd, t_list *stash);
-char	*push_in_content(char *content, char *buff);
-int	found_newline(char *str);
+void	read_from_fd(t_list **stash, int fd);
+int	found_new_line(t_list *stash);
+void	push_in_stash(t_list **stash, char *buff);
+t_list	*ft_lstlast(t_list *lst);
+void	ft_lstclear(t_list **lst, void (*del)(void *));
+void	ft_lstdelone(t_list *lst, void (*del)(void *));
+char	*get_line(t_list *stash);
+int		len_line(t_list *stash);
 
-char	*get_next_line(int fd)
+char	*get_next_line(int	fd)
 {
-	static	t_list	*stash = NULL;
-	int				rd;
-	char	*buff;
+	static t_list	*stash = NULL;
 	char	*line;
-	t_list *init;
+	t_list			*tmp;
 	
-	rd = 1;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (!(stash = malloc(sizeof(t_list))))
+	read_from_fd(&stash, fd);
+	if (stash == NULL)
 		return (NULL);
-	stash->content = NULL;
-	stash->next = NULL;
-	init = stash;
-	//1.read from fd and to linked list
-	while (!found_newline(stash->content) && rd != 0)
+	tmp = stash;
+	while (tmp)
+	{
+		printf("%s", tmp->content);
+		tmp = tmp->next;
+	}
+	line = get_line(stash);
+	ft_lstclear(&stash, free);
+	return (line);	
+}
+
+void	read_from_fd(t_list **stash, int fd)
+{
+	char	*buff;
+	int		rd;
+
+	while (!found_new_line(*stash))
 	{
 		if (!(buff = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
-			return (NULL);
+			return ;
 		rd = (int)read(fd, buff, BUFFER_SIZE);
-		buff[rd] = '\0';
-		if ((stash == NULL && rd == 0) || rd == -1)
+		if (rd == -1 || (rd == 0))
 		{
 			free(buff);
-			break ;
+			return ;
 		}
-		stash->content = push_in_content(stash->content, buff);
-		printf("%d\n", rd);
-		if (stash->next == NULL)
-		{
-			stash->next = malloc(sizeof(t_list));
-			stash->next->content = NULL;
-			stash->next->next = NULL;
-		}
-		printf("%s\n", stash->content);
-		stash = stash->next;
-		free(buff);
+		buff[rd] = '\0';
+		push_in_stash(stash, buff);
 	}
-	while (stash->next != NULL)
-	{
-		printf("%s", stash->content);
-		stash = stash->next;
-	}
-	// printf("%s", init->next->content);
-	//2.extract from stash to line
-	return (line);
 }
-// 	static t_list	*stash = NULL;
-// 	t_list			*ptr;
-// 	char			*line;
-// 	int		lengh;
 
-// 	if (fd < 0 || read(fd, 0, 0) < 0 || BUFFER_SIZE <= 0)
-// 		return (NULL);
-// 	lengh = 0;
-// 	stash = malloc(sizeof(t_list));
-// 	stash->content = NULL;
-// 	stash->next = NULL;
-// 	// 1. read from fd and to linked list
-// 	ptr = read_and_stash(fd, stash);
-// 	// 2. extract from stash to line
-// 	int i;
-// 	int j;
-// 	int	len;
-
-// 	j = 0;
-// 	len = 0;
-// 	t_list *tmp2 = ptr;
-// 	while (ptr)
-// 	{
-// 		i = 0;
-// 		while (ptr->content[i])
-// 		{
-// 			if (ptr->content[i] == '\n')
-// 			{
-// 				j = 1;
-// 				break ;
-// 			}
-// 			printf("%c", ptr->content[i]);
-// 			len++;
-// 			i++;
-// 		}
-// 		if (j)
-// 			break;
-// 		ptr = ptr->next;
-// 	}
-// 	line = malloc((len + 1) * sizeof(char));
-// 	int t = 0;
-// 	j = 0;
-// 	while (tmp2)
-// 	{
-// 		i = 0;
-// 		while (tmp2->content[i])
-// 		{
-// 			if (tmp2->content[i] == '\n')
-// 			{
-// 				j = 1;
-// 				break ;
-// 			}
-// 			line[t] = tmp2->content[i];
-// 			t++;
-// 			i++;
-// 		}
-// 		if (j)
-// 			break;
-// 		tmp2 = tmp2->next;
-// 	}
-// 	line[t] = '\0';
-//  	printf("\n%s", line);
-// 	// 3. clean up stash
-// }
-
-// t_list	*read_and_stash(int	fd, t_list *stash)
-// {
-// 	char	*buff;
-// 	char	*tmp;
-// 	t_list	*initial;
-// 	int		rd;
-
-// 	initial = stash;
-// 	buff = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-// 	tmp = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-// 	if (!buff)
-// 		return (NULL);
-// 	tmp = stash->content;
-// 	while (!found_newline(tmp))
-// 	{
-// 		rd = read(fd, buff, BUFFER_SIZE);
-// 		buff[rd] = '\0';
-// 	    stash->content = push_in_content(stash->content, buff);
-// 		tmp = stash->content;
-// 		if (stash->next == NULL)
-// 		{
-// 			stash->next = malloc(sizeof(t_list));
-// 			stash->next->content = NULL;
-// 			stash->next->next = NULL;
-// 		}
-// 		stash = stash->next;
-// 	}
-// 	return (initial);
-// }
-
-char	*push_in_content(char *content, char *buff)
+int	found_new_line(t_list *stash)
 {
 	int	i;
 
-	i = 0;
-	content = malloc((BUFFER_SIZE + 1) * sizeof(char));
-	while (buff[i])
-	{
-		content[i] = buff[i];
-		i++;
-	}
-	content[i] = '\0';
-	return (content);
-}
-
-int	found_newline(char *str)
-{
-	int	i;
-
-	i = 0;
-	if (str == NULL)
+	if (!stash)
 		return (0);
-	while (str[i])
+	while (stash)
 	{
-		if (str[i] == '\n')
-			return (1);
-		i++;
+		i = 0;
+		while (stash->content[i] != '\0')
+		{
+			if (stash->content[i] == '\n')
+				return (1);
+			i++;
+		}
+		stash = stash->next;
 	}
 	return (0);
+}
+
+void	push_in_stash(t_list **stash, char *buff)
+{
+	t_list	*new_list;
+	t_list	*last_list;
+
+	new_list = malloc(sizeof(t_list));
+	new_list->next = NULL;
+	new_list->content = buff;
+	last_list = ft_lstlast(*stash);
+	if (last_list == NULL)
+		*stash = new_list;
+	else
+		last_list->next = new_list;
+}
+
+t_list	*ft_lstlast(t_list *lst)
+{
+	if (!lst)
+		return (NULL);
+	while (lst->next != NULL)
+	{
+		lst = lst->next;
+	}
+	return (lst);
+}
+
+void	ft_lstclear(t_list **lst, void (*del)(void *))
+{
+	t_list	*tmp;
+
+	if (!lst)
+		return ;
+	while (*lst)
+	{
+		tmp = (*lst)->next;
+		ft_lstdelone(*lst, del);
+		*lst = tmp;
+	}
+}
+
+void	ft_lstdelone(t_list *lst, void (*del)(void *))
+{
+	if (!lst)
+		return ;
+	(*del)(lst->content);
+	free(lst);
+}
+
+char	*get_line(t_list *stash)
+{
+	char	*line;
+	int		len;
+	int		i;
+	int		j;
+
+	if (!stash)
+		return (NULL);
+	len = len_line(stash);
+	if (!(line = malloc(sizeof(char) * (len + 1))))
+		return (NULL);
+	j = 0;
+	while (stash)
+	{
+		i = 0;
+		while (stash->content[i] && j < len)
+			line[j++] = stash->content[i++];
+		stash = stash->next;
+	}
+	return (line);
+}
+
+int	len_line(t_list *stash)
+{
+	int	i;
+	int	len;
+
+	if (!stash)
+		return (0);
+	while(stash)
+	{
+		i = 0;
+		while(stash->content[i])
+		{
+			if (stash->content[i] == '\n')
+			{
+				len++;
+				return (len);
+			}
+			len++;
+			i++;
+		}
+		stash = stash->next;
+	}
+	return (len);
 }

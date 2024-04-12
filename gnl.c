@@ -6,7 +6,7 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 09:22:57 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/11 13:56:55 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/12 15:24:30 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char	*gnl(int fd)
 		return (NULL);
 	//clean up the stash
 	ft_clean(&stash);
-	// printf("%s", line);
+	// printf("%s\n", stash->content);
 	return (line);
 }
 
@@ -63,6 +63,11 @@ void read_and_stashed(t_list **stash, int fd)
 		}
 		buff[rd] = '\0';
 		push_in_stash(stash, buff);
+	}
+	while(!(*stash))
+	{
+		printf("%s", (*stash)->content);
+		(*stash)->next;
 	}
 }
 
