@@ -6,7 +6,7 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 07:40:10 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/12 15:30:47 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/13 12:48:38 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,27 +20,22 @@ void	ft_lstclear(t_list **lst, void (*del)(void *));
 void	ft_lstdelone(t_list *lst, void (*del)(void *));
 char	*get_line(t_list *stash);
 int		len_line(t_list *stash);
+void	ft_free(t_list **stash);
 
 char	*get_next_line(int	fd)
 {
 	static t_list	*stash = NULL;
 	char	*line;
-	t_list			*tmp;
 	
+	line = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	read_from_fd(&stash, fd);
 	if (stash == NULL)
 		return (NULL);
-	tmp = stash;
-	while (tmp)
-	{
-		printf("%s", tmp->content);
-		tmp = tmp->next;
-	}
 	line = get_line(stash);
-	ft_lstclear(&stash, free);
-	return (line);	
+	ft_free(&stash);
+	return (line);
 }
 
 void	read_from_fd(t_list **stash, int fd)
@@ -48,6 +43,8 @@ void	read_from_fd(t_list **stash, int fd)
 	char	*buff;
 	int		rd;
 
+	rd = -1;
+	buff = NULL;
 	while (!found_new_line(*stash))
 	{
 		if (!(buff = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
@@ -56,6 +53,7 @@ void	read_from_fd(t_list **stash, int fd)
 		if (rd == -1 || (rd == 0))
 		{
 			free(buff);
+			buff = NULL;
 			return ;
 		}
 		buff[rd] = '\0';
@@ -151,6 +149,7 @@ char	*get_line(t_list *stash)
 			line[j++] = stash->content[i++];
 		stash = stash->next;
 	}
+	line[j] = '\0';
 	return (line);
 }
 
@@ -177,4 +176,37 @@ int	len_line(t_list *stash)
 		stash = stash->next;
 	}
 	return (len);
+}
+
+void	ft_free(t_list **stash)
+{
+	char	*remain;
+	int		i;
+	int		j;
+	t_list	*last;
+	
+	if (!(remain = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
+		return ;
+	last = ft_lstlast(*stash);
+	i = 0;
+	while (last->content[i] && last->content[i] != '\n')
+		i++;
+	j = 0;
+	while (last->content[++i])
+		remain[j++] = last->content[i];
+	remain[j] = '\0';
+	ft_lstclear(stash, free);
+	*stash = NULL;
+	if (remain[0])
+	{
+		*stash = malloc(sizeof(t_list));
+		(*stash)->content = malloc(sizeof(char) * j);
+		(*stash)->content = remain;
+		(*stash)->next = NULL;
+	}
+	else
+	{
+		free(remain);
+		remain = NULL;
+	}
 }
