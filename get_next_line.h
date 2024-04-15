@@ -6,7 +6,7 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 08:56:20 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/10 10:17:19 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/15 10:38:27 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,10 @@ typedef struct s_list
 }	t_list;
 
 char	*get_next_line(int fd);
-char	*gnl(int fd);
+void	push_in_stash(t_list **stash, char *buff);
+t_list	*ft_lstlast(t_list *lst);
+t_list	*ft_lstnew(void *content);
+void	ft_lstclear(t_list **lst, void (*del)(void *));
+void	ft_lstdelone(t_list *lst, void (*del)(void *));
 
 #endif
