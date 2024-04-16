@@ -6,7 +6,7 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:30:51 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/15 10:38:08 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/16 12:37:10 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ void	push_in_stash(t_list **stash, char *buff)
 
 	new_list = malloc(sizeof(t_list));
 	last_list = ft_lstlast(*stash);
+	if (new_list == NULL)
+		return ;
 	if (*stash == NULL)
 		*stash = new_list;
 	else
@@ -50,7 +52,7 @@ t_list	*ft_lstnew(void *content)
 	return (new);
 }
 
-void	ft_lstclear(t_list **lst, void (*del)(void *))
+void	ft_lstclear(t_list **lst)
 {
 	t_list	*tmp;
 
@@ -59,15 +61,28 @@ void	ft_lstclear(t_list **lst, void (*del)(void *))
 	while (*lst)
 	{
 		tmp = (*lst)->next;
-		ft_lstdelone(*lst, del);
+		free((*lst)->content);
+		free(*lst);
 		*lst = tmp;
 	}
 }
 
-void	ft_lstdelone(t_list *lst, void (*del)(void *))
+int	found_new_line(t_list *stash)
 {
-	if (!lst)
-		return ;
-	(*del)(lst->content);
-	free(lst);
+	int	i;
+
+	if (!stash)
+		return (0);
+	while (stash)
+	{
+		i = 0;
+		while (stash->content[i] != '\0')
+		{
+			if (stash->content[i] == '\n')
+				return (1);
+			i++;
+		}
+		stash = stash->next;
+	}
+	return (0);
 }

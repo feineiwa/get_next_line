@@ -6,7 +6,7 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 07:40:10 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/15 15:14:04 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/16 12:31:55 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ static void		read_from_fd(t_list **stash, int fd);
 static char		*get_line(t_list *stash);
 static int		len_line(t_list *stash);
 static void		ft_free(t_list **stash);
-static int		found_new_line(t_list *stash);
 
 char	*get_next_line(int fd)
 {
@@ -30,6 +29,11 @@ char	*get_next_line(int fd)
 	if (stash == NULL)
 		return (NULL);
 	line = get_line(stash);
+	if (line[0] == '\0')
+	{
+		free(line);
+		return (NULL);
+	}
 	ft_free(&stash);
 	return (line);
 }
@@ -46,37 +50,15 @@ void	read_from_fd(t_list **stash, int fd)
 		if (!buff)
 			return ;
 		rd = (int)read(fd, buff, BUFFER_SIZE);
-		if (!rd || rd == -1)
+		if (rd == 0 || rd == -1)
 		{
 			free(buff);
 			return ;
 		}
-		if (buff[0] == '\0')
-			return ;
 		while (rd <= BUFFER_SIZE)
 			buff[rd++] = '\0';
 		push_in_stash(stash, buff);
 	}
-}
-
-int	found_new_line(t_list *stash)
-{
-	int	i;
-
-	if (!stash)
-		return (0);
-	while (stash)
-	{
-		i = 0;
-		while (stash->content[i] != '\0')
-		{
-			if (stash->content[i] == '\n')
-				return (1);
-			i++;
-		}
-		stash = stash->next;
-	}
-	return (0);
 }
 
 char	*get_line(t_list *stash)
@@ -147,13 +129,14 @@ void	ft_free(t_list **stash)
 		if (!remain)
 			return ;
 		j = 0;
-		while (last->content[i++])
-			remain[j++] = last->content[i];
+		i++;
+		while (last->content[i])
+			remain[j++] = last->content[i++];
 		remain[j] = '\0';
-		ft_lstclear(stash, free);
+		ft_lstclear(stash);
 		*stash = NULL;
 		*stash = ft_lstnew(remain);
 	}
 	else
-		ft_lstclear(stash, free);
+		ft_lstclear(stash);
 }
