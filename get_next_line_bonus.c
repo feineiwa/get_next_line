@@ -6,7 +6,7 @@
 /*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 08:42:15 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/17 09:29:25 by frahenin         ###   ########.fr       */
+/*   Updated: 2024/04/17 18:32:57 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ char	*get_next_line(int fd)
 	if (line[0] == '\0')
 	{
 		free(line);
+		ft_lstclear(&stash[fd]);
 		return (NULL);
 	}
 	ft_free(&stash[fd]);
@@ -55,8 +56,7 @@ void	read_from_fd(t_list **stash, int fd)
 			free(buff);
 			return ;
 		}
-		while (rd <= BUFFER_SIZE)
-			buff[rd++] = '\0';
+		buff[rd] = '\0';
 		push_in_stash(stash, buff);
 	}
 }
@@ -68,18 +68,24 @@ char	*get_line(t_list *stash)
 	int		i;
 	int		j;
 
-	if (!stash)
-		return (NULL);
 	len = len_line(stash);
 	line = malloc(sizeof(char) * (len + 1));
-	if (!line)
+	if (!line || !stash)
 		return (NULL);
 	j = 0;
 	while (stash)
 	{
 		i = 0;
-		while (stash->content[i] && (j < len))
+		while (stash->content[i])
+		{
+			if (stash->content[i] == '\n')
+			{
+				line[j++] = '\n';
+				line[j] = '\0';
+				return (line);
+			}
 			line[j++] = stash->content[i++];
+		}
 		stash = stash->next;
 	}
 	line[j] = '\0';
@@ -125,7 +131,7 @@ void	ft_free(t_list **stash)
 		i++;
 	if (last->content[i] == '\n')
 	{
-		remain = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		remain = (char *)malloc(sizeof(char) * BUFFER_SIZE);
 		if (!remain)
 			return ;
 		j = 0;
@@ -134,7 +140,6 @@ void	ft_free(t_list **stash)
 			remain[j++] = last->content[i++];
 		remain[j] = '\0';
 		ft_lstclear(stash);
-		*stash = NULL;
 		*stash = ft_lstnew(remain);
 	}
 	else
