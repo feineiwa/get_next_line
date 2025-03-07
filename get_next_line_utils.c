@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: frahenin <frahenin@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:30:51 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/16 12:37:10 by frahenin         ###   ########.fr       */
+/*   Updated: 2025/03/07 08:03:41 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-void	push_in_stash(t_list **stash, char *buff)
+void	push_in_stash(t_gnl **stash, char *buff)
 {
-	t_list	*new_list;
-	t_list	*last_list;
+	t_gnl	*new_list;
+	t_gnl	*last_list;
 
-	new_list = malloc(sizeof(t_list));
+	new_list = malloc(sizeof(t_gnl));
 	last_list = ft_lstlast(*stash);
 	if (new_list == NULL)
 		return ;
@@ -29,7 +29,7 @@ void	push_in_stash(t_list **stash, char *buff)
 	new_list->next = NULL;
 }
 
-t_list	*ft_lstlast(t_list *lst)
+t_gnl	*ft_lstlast(t_gnl *lst)
 {
 	if (!lst)
 		return (NULL);
@@ -40,11 +40,11 @@ t_list	*ft_lstlast(t_list *lst)
 	return (lst);
 }
 
-t_list	*ft_lstnew(void *content)
+t_gnl	*ft_lstnew(void *content)
 {
-	t_list	*new;
+	t_gnl	*new;
 
-	new = (t_list *)malloc(sizeof(t_list));
+	new = (t_gnl *)malloc(sizeof(t_gnl));
 	if (!new)
 		return (NULL);
 	new->content = content;
@@ -52,9 +52,9 @@ t_list	*ft_lstnew(void *content)
 	return (new);
 }
 
-void	ft_lstclear(t_list **lst)
+void	ft_lstclear(t_gnl **lst)
 {
-	t_list	*tmp;
+	t_gnl	*tmp;
 
 	if (!lst)
 		return ;
@@ -67,7 +67,7 @@ void	ft_lstclear(t_list **lst)
 	}
 }
 
-int	found_new_line(t_list *stash)
+int	found_new_line(t_gnl *stash)
 {
 	int	i;
 

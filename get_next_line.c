@@ -3,23 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: frahenin <frahenin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: frahenin <frahenin@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 07:40:10 by frahenin          #+#    #+#             */
-/*   Updated: 2024/04/17 18:57:14 by frahenin         ###   ########.fr       */
+/*   Updated: 2025/03/07 08:02:26 by frahenin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static void		read_from_fd(t_list **stash, int fd);
-static char		*get_line(t_list *stash);
-static int		len_line(t_list *stash);
-static void		ft_free(t_list **stash);
+static void		read_from_fd(t_gnl **stash, int fd);
+static char		*get_line(t_gnl *stash);
+static int		len_line(t_gnl *stash);
+static void		ft_free(t_gnl **stash);
 
 char	*get_next_line(int fd)
 {
-	static t_list	*stash = NULL;
+	static t_gnl	*stash = NULL;
 	char			*line;
 
 	line = NULL;
@@ -29,17 +29,11 @@ char	*get_next_line(int fd)
 	if (stash == NULL)
 		return (NULL);
 	line = get_line(stash);
-	if (line[0] == '\0')
-	{
-		free(line);
-		ft_lstclear(&stash);
-		return (NULL);
-	}
 	ft_free(&stash);
 	return (line);
 }
 
-void	read_from_fd(t_list **stash, int fd)
+void	read_from_fd(t_gnl **stash, int fd)
 {
 	char	*buff;
 	int		rd;
@@ -61,7 +55,7 @@ void	read_from_fd(t_list **stash, int fd)
 	}
 }
 
-char	*get_line(t_list *stash)
+char	*get_line(t_gnl *stash)
 {
 	char	*line;
 	int		len;
@@ -86,7 +80,7 @@ char	*get_line(t_list *stash)
 	return (line);
 }
 
-int	len_line(t_list *stash)
+int	len_line(t_gnl *stash)
 {
 	int	i;
 	int	len;
@@ -112,13 +106,13 @@ int	len_line(t_list *stash)
 	return (len);
 }
 
-void	ft_free(t_list **stash)
+void	ft_free(t_gnl **stash)
 {
 	char	*remain;
 	int		j;
 	int		i;
-	t_list	*last;
-	
+	t_gnl	*last;
+
 	last = ft_lstlast(*stash);
 	i = 0;
 	while (last->content[i] && last->content[i] != '\n')
